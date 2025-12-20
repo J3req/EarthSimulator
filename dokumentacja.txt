@@ -1,0 +1,101 @@
+> Vec3
+    Struktura przechowująca koordynaty w oknie
+
+> Particle
+    Struktura cząsteczki przechowująca pozycje i prędkość
+    cząsteczki
+
+> glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
+    x, y - lewy dolny róg obszaru rysowania (jako początek okna)
+    width, height - szerokość i wysokość okna
+
+> VBO
+    Jest jak magazyn na dane, ale nie wie co oznaczają te dane,
+    jest to tylko ciąg bajtów.
+
+> VAO
+    Odczytuje dane z VBO i jest jak instrukcja, przykładowo
+    "czytaj co 3 liczby jako pozycje"
+
+> atrybut
+    Wierzchołek, piksel
+
+> void glGenVertexArrays(GLsizei n, GLuint* arrays)
+    Tworzy nowy obiekt VAO w OpenGL, nie ustawia danych
+    n - ile VAO wygenerować
+    arrays - wskaźnik na ID obiektu VAO
+
+> void glGenBuffers(GLsizei n, GLuint* buffers)
+    Tworzy bufor danych w GPU
+    n - ile bufferów
+    buffers - wskaźnik na ID "magazynu danych", czyli VBO
+
+> void glBindVertexArray(GLuint array)
+    Od tej chwili wszystkie operacje na właściwościach danego
+    piksela zapisują się W TYM VAO
+    array - ID VAO
+    
+> void glBindBuffer(GLenum target, GLuint buffer)
+    Podłącza konkretny bufor, aby OpenGL z niego korzystał,
+    i od wtedy GPU wie, że wszystkie operacje na GL_ARRAY_BUFFER
+    dotyczą właśnie TEGO VBO
+    target - typ bufora, czyli bufor wierzchołków, pikseli (VBO)
+    buffer - ID bufora , 0 odłącza aktualny bufor z targetu,
+             a jakaś wartość ID danego VBO go podłącza
+
+> glBufferData(GLenum target, GLsizeiptr size, const void* data, GLenum usage)
+    Tworzy i alokuje pamięć w GPU i opcjonalnie wypełnia ją danymi
+    target - podłączony bufor, z którego korzysta OpenGL
+    size - ile bajtów danych jakie będą wyświetlane na ekranie
+    data - wskaźnik na dane, nullptr czyli rezerwacja
+    usage - jak GPU będzie korzystać z bufora:
+            1) GL_DYNAMIC_DRAW,
+            2) GL_STATIC_DRAW
+
+> void glVertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
+    Mówi OpenGL'owi, jak interpretować dane z VBO dla VAO
+    index - numer wierzchołka, piksela w shaderze
+    size - ile liczb w atrybucie (3 -> vec3)
+    type - typ danych (np. GL_FLOAT)
+    normalized - czy normalizować
+        normalizacja - jak mamy liczby pełne np. 127 to TRUE spowoduje
+                       przeskalowanie ich w ten sposób, żeby dla GPU wyglądały jak floaty
+    stride - mamy strukturę jakiegoś wierzchołka i podajemy wielkość jej zmiennych
+        np. float dane[] = {
+            x1, y1, z1, r1, g1, b1
+            x2, y2, z2, r2, g2, b2
+        }
+        Dlatego tu będzie 6*sizeof(float), bo każdy wierzchołek ma 6 floatów
+    pointer - od którego bajtu w buforze zaczyna czytać ten atrybut
+        np. dla pozycji (void*)0 -> od początku bufora
+        np. dla koloru (void*)(3*sizeof(float)) od 4 bajtu (3 pierwsze floaty to pozycja)
+
+> void glEnableVertexAttribArray(GLuint index);
+    Włącza dany atrybut w VAO, żeby shader mógł go użyc
+    index - numer atrybutu
+
+> void glPointSize(GLfloat size);
+    size - wielkość punktu w pikselach 
+
+> void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void* data);
+    Nadpisuje część bufora GPU bez alokacji nowej pamięci, aktualizujemy tym
+    dynamicznie dane, tworzy nam to klatki i nie tworzymy przez to nowego bufora tylko nadpisujemy stare miejsce w GPU,
+    dzięki czemu nie trzeba alokować co chwila pamięci
+    target - GL_ARRAY_BUFFER, czyli zapisujemy do VBO z danymi wierzchołków
+    offset - od którego bajtu w buforze zacząć, ze zwględu na to, że mogę mieć inny bufor z danymi
+    size - ile bajtów przepisać z data, czyli tego co będziemy mieli na ekranie, czyli np. liczba cząsteczek
+    data - wskaźnik na dane w pamięci CPU, które GPU ma skopiować, może to być np. tablica punktów
+
+> void glClearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
+    r, g, b, a - kolor tła
+    Uwaga! dane wartości r, g, b dzielimy na 255 aby otrzymać żadaną wartość koloru
+
+> void glClear(GLbitfield mask)
+    Czyści wybrane bufory, np. ekran
+    mask - co czyścić
+    
+> void glDrawArrays(GLenum mode, GLint first, GLsizei count)
+    Wysyła dane do GPU i je rysuje
+    mode - typ rysowanych rzeczy np. GL_POINTS
+    first - indeks startowy w VAO
+    count - ile wierzchołków narysować
