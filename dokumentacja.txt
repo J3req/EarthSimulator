@@ -43,7 +43,7 @@
     buffer - ID bufora , 0 odłącza aktualny bufor z targetu,
              a jakaś wartość ID danego VBO go podłącza
 
-> glBufferData(GLenum target, GLsizeiptr size, const void* data, GLenum usage)
+> void glBufferData(GLenum target, GLsizeiptr size, const void* data, GLenum usage)
     Tworzy i alokuje pamięć w GPU i opcjonalnie wypełnia ją danymi
     target - podłączony bufor, z którego korzysta OpenGL
     size - ile bajtów danych jakie będą wyświetlane na ekranie
